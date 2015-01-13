@@ -54,15 +54,23 @@ var game = {
 
 	},
 	movePlayer: function() {
+		var oldVelocity = this.velocityY;
 		// gravity test
 		if (this.player.position.y > -45 ) {
-			this.velocityY -= 0.4;
+			this.velocityY -= 0.02; //0.4;
 		} else {
 
 			this.velocityY = -this.velocityY  ;
 		}
+
 		this.player.position.y += this.velocityY;
-		this.player.scale.y = 1 + Math.abs(this.velocityY * 0.3);
+
+
+		var diff = Math.abs(oldVelocity - this.velocityY);
+
+		this.player.scale.x = 1 + diff * 0.1;
+		this.player.scale.y = 1 + Math.abs(this.velocityY * 0.3) - (diff * 0.1);
+
 	},
 	render: function() {
 		this.movePlayer();
