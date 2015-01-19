@@ -125,12 +125,13 @@ var game = {
     	  //THREE.AnimationHandler.add( self.player.geometry.animations[0]);
 		self.animation = new THREE.Animation(self.player, self.player.geometry.animations[0]);
 		
-		//self.animation.play(0.4);
+		self.animation.play(0);
+		console.log(self.animation);
 		//self.animation.loop = false;
 	},
 	updateAnimation: function(delta) {
 		if (this.animation) {
-			this.animation.update(delta);
+			this.animation.update(delta * 5);
 		}
 	},
 	movePlayer: function() {
@@ -143,6 +144,7 @@ var game = {
 		if (this.player.position.y > -45 ) {
 			this.velocityY -= 0.2; //0.4;
 		} else {
+			this.highest = false;
 
 			this.velocityY = 0;//-this.velocityY  ;
 		}
@@ -156,63 +158,76 @@ var game = {
 		this.player.scale.y = 10 + Math.abs(this.velocityY * 2) - (diff );
 
 		// gamepad
-		var pads = Gamepad.getStates();
+		var pads = navigator.getGamepads(); //Gamepad.getStates();
 		var pad = pads[0];
 		var horizontal = 0;
 		var vertical = 0;
 		if (pad) {
+
 			if (!horizontal) {
-				horizontal = pad.leftStickX;
+				horizontal = pad.axes[0]
 				if (horizontal < 0.1 && horizontal > -0.1) {
 					horizontal = 0;
+
 				}
+				if (horizontal == 0 && this.player.rotation.y < (Math.PI*2)) {
+
+					this.player.rotation.y += 0.2;				
+				}
+				else if (horizontal != 0 && this.player.rotation.y > (3 * (Math.PI/2))){
+					// opponent direction
+					this.player.rotation.y -= 0.2;
+				}
+
+
 			}
 			if (!vertical) {
-				vertical = pad.leftStickY;
+				vertical = pad.axes[1];
 				if (vertical < 0.1 && vertical > -0.1) {
 					vertical = 0;
 				}
 			}
+			//console.log(pad.axes[0]);
+			if (pad.axes[1] < -0.1) {
+				// jump
+				if (this.player.position.y < 0 && !this.highest) {
+					this.velocityY = 1.5;
+					this.player.position.y += this.velocityY;					
+				} else if (this.player.position.y >= 0) {
+					this.highest = true;
+				}
+				
+			}
+
 		}
 
-	// rotation stuff
-	/*
-		var stickDirection = new THREE.Vector3(horizontal, 0, vertical);
+		if (pad.buttons[0].pressed && !this.punching) {
+			this.punching = true;
+		}
 
-		var targetMatrix = new THREE.Matrix4();
-		targetMatrix.extractRotation(self.player.matrix);
-		var targetDirection = new THREE.Vector3(1,0,1); // root direction
-		targetDirection = targetDirection.applyMatrix4(targetMatrix);
 
-			
-		// get camera direction
-		var cameraMatrix = new THREE.Matrix4();
-		cameraMatrix.extractRotation(self.cameraControls.camera.matrix);
-		var cameraDirection = new THREE.Vector3(1,1,1); // root direction
-		cameraDirection = cameraDirection.applyMatrix4(cameraMatrix);
+		// update animation
+		if (this.animation) {
 
-		cameraDirection.y = 0;
+			if (this.punching && this.animation.currentTime < 1.6) {
+				this.animation.play(1.6);
+			} else if (this.animation.currentTime > 2.5) {
+				this.punching = false;
+			} else if (!this.punching) {
 
-		var referentialShift = new THREE.Quaternion();
-		referentialShift.setFromUnitVectors(new THREE.Vector3(0,0,1), cameraDirection);
-		
-		var moveDirection = new THREE.Vector3();
-		moveDirection.copy(stickDirection);
-		moveDirection.applyQuaternion(referentialShift);
+				if (horizontal == 0 ) {
+					this.animation.stop();
+					//console.log(thi)
+				} else if (!this.animation.isPlaying || this.animation.currentTime >= 1.5){
+					console.log("play anim");
+					this.animation.play(0);
+				}
+			}
+		}
 
-		var axisSign = new THREE.Vector3();
-		axisSign.crossVectors(moveDirection, targetDirection);
 
 	
-		var rootAngle = targetDirection.angleTo(moveDirection) * (axisSign.y >= 0 ? -1.0 : 1.0);
-		rootAngle = rootAngle;
-		if (rootAngle) {
-		 self.player.rotateY( rootAngle * 0.2 );
-
-		}
-		*/
-
-		this.player.translateX(horizontal);
+		this.player.position.x -= horizontal;
 
 
 	},
