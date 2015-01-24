@@ -16,6 +16,7 @@ var game = {
 	scene: null,
 	camera: null,
 	cameraControls: null,
+	test: null,
 
 	loader: null,
 	clock: null,
@@ -45,11 +46,80 @@ var game = {
 
 	    this.scene.add(this.camera);
 
+
+	  
+		
+
+//		this.createTrail();
+		
 	    this.buildWorld();
 	    this.animate();
 
 
+	},/*
+	createTrail: function() {
+		var geometry = new THREE.Geometry();
+		// initialize empty geometry buffer
+		for (var i=0; i<=40; i++) {
+			geometry.vertices.push(
+				new THREE.Vector3( 0, 0, 0 ),
+				new THREE.Vector3( 0, 0, 0 ),
+				new THREE.Vector3( 0, 0, 0 )
+			);
+			geometry.faces.push( new THREE.Face3( 0, 0, 0));
+		}
+		geometry.computeBoundingSphere();
+		geometry.dynamic = true;
+		this.trail = {
+			mesh: new THREE.Mesh(
+				geometry,
+				new THREE.MeshBasicMaterial({color: 0x00ff00, side: THREE.DoubleSide, wireframe: true})
+			),
+			startPosition1: null,
+			startPosition2: null,
+			index: 0
+		}
+
 	},
+	setTrailPosition: function(pos1, pos2) {
+		this.trail.startPosition1 = pos1;
+		this.trail.startPosition2 = pos2;
+	},
+	addTrailSegment: function(pos1, pos2) {
+		if (this.trail.index <20) {
+			var geo = this.trail.mesh.geometry;
+			var i = this.trail.index;
+			var i6= (i*6);
+
+			if (this.trail.index == 0) {
+				var oldPos1 = this.trail.startPosition1.clone();
+				var oldPos2 = this.trail.startPosition2.clone();
+			} else {
+				oldPos1 = geo.vertices[i6 - 3];
+				oldPos2 = geo.vertices[i6 - 1];
+			}
+
+			var newPos1 = pos1.clone();
+			var newPos2 = pos2.clone();
+
+			// first triangle
+			geo.vertices[i6] = oldPos1;
+			geo.vertices[i6 + 1] = oldPos2;
+			geo.vertices[i6 + 2] = newPos1;
+
+			geo.vertices[i6 + 3] = newPos1;
+			geo.vertices[i6 + 4] = oldPos2;
+			geo.vertices[i6 + 5] = newPos2;
+
+			geo.faces[i * 2] = new THREE.Face3(i6, i6+1, i6+2);
+			geo.faces[(i * 2) + 1] = new THREE.Face3(i6 + 3, i6+4, i6+5);
+			geo.verticesNeedUpdate = true;
+			geo.computeFaceNormals();
+			geo.computeVertexNormals();
+			this.trail.index++;
+
+		}
+	},*/
 	buildWorld: function() {
 		// light
 			var light = new THREE.DirectionalLight( 0xFFA030 );
@@ -98,6 +168,19 @@ var game = {
 			self.player.position.set(0,30,0);
 			self.player.rotateY(Math.PI);
 			self.scene.add(self.player);
+			
+			self.trailHelper = new THREE.Trails(self.player, 'hand.L');
+						trailMesh = self.trailHelper.getMesh();
+						trailMesh.scale.set(20.0,20.0,20.0);
+					//	trailMesh.position.set(0,-30,0);
+						self.scene.add(trailMesh);
+
+			self.helper = new THREE.SkeletonHelper( self.player );
+			self.helper.material.linewidth = 3;
+			self.helper.visible = true;
+			console.log(self.helper);
+			self.scene.add( self.helper );
+
 			self.animatePlayer();
 			self.camera.lookAt(new THREE.Vector3(0, -20, 0 ));		
 		});
@@ -203,16 +286,26 @@ var game = {
 
 		if (pad.buttons[0].pressed && !this.punching) {
 			this.punching = true;
+				if (!this.verticesAdded) {
+						
+						this.trailHelper.setOldPosition();
+						this.verticesAdded = true;	
+				}
 		}
 
 
 		// update animation
 		if (this.animation) {
 
-			if (this.punching && this.animation.currentTime < 1.6) {
+			if (this.punching && this.animation.currentTime < 1.58) {				
+			
 				this.animation.play(1.6);
 			} else if (this.animation.currentTime > 2.5) {
 				this.punching = false;
+			} else if (this.punching && this.animation.currentTime > 2.0) {
+				if (((this.animation.currentTime - 2.0) * 10) > this.trailHelper.currentIndex ) {
+					this.trailHelper.addSegment();
+				}
 			} else if (!this.punching) {
 
 				if (horizontal == 0 ) {
@@ -234,6 +327,9 @@ var game = {
 	render: function() {
 		this.updateAnimation(this.clock.getDelta());
 		this.movePlayer();
+		if (this.helper) {
+			this.helper.update();
+		}
 		this.renderer.render(this.scene, this.camera);
 	},
 	animate: function() {
