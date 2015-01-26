@@ -101,7 +101,7 @@ var game = {
 			self.player.rotateY(Math.PI);
 			self.scene.add(self.player);
 			
-			self.trailHelper = new THREE.Trails(self.player, 'weapon');
+			self.trailHelper = new THREE.Trails(self.player, 'weaponT');
 			trailMesh = self.trailHelper.getMesh();
 			//trailMesh.scale.set(20.0,20.0,20.0);
 			//	trailMesh.position.set(0,-30,0);
@@ -111,7 +111,7 @@ var game = {
 			self.helper.material.linewidth = 3;
 			self.helper.visible = true;
 			console.log(self.helper);
-			self.scene.add( self.helper );
+			//self.scene.add( self.helper );
 
 			self.animatePlayer();
 			self.camera.lookAt(new THREE.Vector3(0, -20, 0 ));		

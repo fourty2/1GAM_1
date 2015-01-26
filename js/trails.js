@@ -32,9 +32,10 @@ THREE.Trails = function (object, bone) {
 
 	this.mesh = new THREE.Mesh(
 				geometry,
-				new THREE.MeshFaceMaterial([
+
+			//	new THREE.MeshFaceMaterial([
 					new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide, wireframe: false, overdraw:true, transparent: true})
-				])
+			//	])
 				
 			);
 
