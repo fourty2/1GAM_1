@@ -82,7 +82,7 @@ var game = {
 
 		var self = this; // scope
 		//  player
-		this.loader.load('models/player.json', function(geometry, materials) {
+		this.loader.load('models/player2.json', function(geometry, materials) {
 			for (var i = 0; i< materials.length; i++) {
 				materials[i].shading = THREE.FlatShading;
 			//	materials[i].skinning = true;
@@ -101,7 +101,7 @@ var game = {
 			self.player.rotateY(Math.PI);
 			self.scene.add(self.player);
 			
-			self.trailHelper = new THREE.Trails(self.player, 'hand.L');
+			self.trailHelper = new THREE.Trails(self.player, 'weapon');
 			trailMesh = self.trailHelper.getMesh();
 			//trailMesh.scale.set(20.0,20.0,20.0);
 			//	trailMesh.position.set(0,-30,0);
