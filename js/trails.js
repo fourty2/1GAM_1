@@ -14,6 +14,7 @@ THREE.Trails = function (object, bone) {
 	this.maxSegments = 16;
 
 	var geometry = new THREE.Geometry();
+//	geometry.faceVertexUvs[0] = [];
 	for ( var i = 0; i <= this.maxSegments * 2; i ++ ) {
 		geometry.vertices.push(
 				new THREE.Vector3( 0, 0, 0 ),
@@ -21,20 +22,30 @@ THREE.Trails = function (object, bone) {
 				new THREE.Vector3( 0, 0, 0 )
 		);
 		geometry.faces.push( new THREE.Face3( 0, 0, 0 ) );
+		/*geometry.faceVertexUvs[0].push([
+            new THREE.Vector2(0, 0 ),
+            new THREE.Vector2(0, 1 ),
+            new THREE.Vector2(1,0 )
+        ]);*/
 	}
 
 	this.currentIndex = 0;	
-	var texture = THREE.ImageUtils.loadTexture( "images/schweif2.png" );
+	/*var texture = THREE.ImageUtils.loadTexture( "images/schweif2.png" );
 	texture.repeat.set(0.05,0.05);
 	texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
-	
-	this.assignUVs2(geometry);
+	*/
+	var map = THREE.ImageUtils.loadTexture( 'images/UV_Grid_Sm.jpg' );
+				map.repeat.set(0.05,0.05);
+				map.wrapS = map.wrapT = THREE.RepeatWrapping;
+//				map.anisotropy = 8;
+
+//	this.assignUVs(geometry);
 
 	this.mesh = new THREE.Mesh(
 				geometry,
 
 			//	new THREE.MeshFaceMaterial([
-					new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide, wireframe: false, overdraw:true, transparent: true})
+					new THREE.MeshBasicMaterial({map: map, side: THREE.DoubleSide, wireframe: false, overdraw:true, transparent: true})
 			//	])
 				
 			);
