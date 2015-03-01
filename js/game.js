@@ -93,8 +93,7 @@ var game = {
 			self.player = new THREE.SkinnedMesh(
 				geometry,
 				facematerial
-				//new THREE.MeshBasicMaterial({color: 0xffff00})
-			//	new THREE.MeshBasicMaterial({map: texture, shading: THREE.FlatShading})
+			
 			);
 			self.player.scale.set(10.0,10.0,10.0);
 			self.player.position.set(0,30,0);
@@ -125,7 +124,6 @@ var game = {
 		for (var k in materials) {
 			var mat = self.player.material.materials[k];
 			mat.skinning = true;
-			//materials[k].skinning = true;
 		}
 
 		self.animation = new THREE.Animation(self.player, self.player.geometry.animations[0]);

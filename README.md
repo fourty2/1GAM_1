@@ -1,5 +1,5 @@
 # 1GAM_1
-January entry for #1GAM challenge
+Entry for #1GAM challenge - missed january and february :/
 
 Should become a 2P Beat'em'Up, 3D, low poly, webgl.
 I'd like adorable little bouncy creatures.
